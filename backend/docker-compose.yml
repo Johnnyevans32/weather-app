@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY}
+      - OPENWEATHER_BASE_URL='https://api.openweathermap.org/data/2.5/'
+      - WEATHERAPI_URL=https://api.openweathermap.org/data/2.5
+      - WEATHERAPI_KEY=${WEATHERAPI_KEY}
+      - RATE_LIMIT_TTL=60
+      - RATE_LIMIT_MAX=100
+      - REDIS_URL=${REDIS_URL}
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: yarn start:dev 
