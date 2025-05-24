@@ -27,12 +27,10 @@ Create a `.env` file in the root directory with the following variables:
 
 ```env
 PORT=3000
-WEATHER_API_KEY=your_openweathermap_api_key
-WEATHER_API_URL=https://api.openweathermap.org/data/2.5
+OPENWEATHER_API_KEY=your_openweathermap_api_key
+OPENWEATHER_BASE_URL=https://api.openweathermap.org/data/2.5
 WEATHERAPI_KEY=your_weatherapi_key
-WEATHER_PROVIDER=openweathermap # or 'weatherapi'
-RATE_LIMIT_TTL=60
-RATE_LIMIT_MAX=100
+WEATHERAPI_URL=http://api.weatherapi.com/v1'
 REDIS_URL=your_redis_url
 ```
 
@@ -77,7 +75,6 @@ Response:
     "windSpeed": 4.1,
     "timestamp": 1234567890
   },
-  // ... more cities
 ]
 ```
 
