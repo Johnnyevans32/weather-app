@@ -9,10 +9,11 @@ RUN yarn install --frozen-lockfile --production && \
 
 COPY . .
 
-RUN yarn build && \
+RUN yarn install --frozen-lockfile && \
+    yarn build && \
     yarn install --frozen-lockfile --production && \
     yarn cache clean && \
-    rm -rf src/ tests/ 
+    rm -rf src/ tests/
 
 EXPOSE 3000
 
