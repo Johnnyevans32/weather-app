@@ -52,20 +52,26 @@ export class AiService {
   }
 
   private findCityInTokens(tokens: string[]): string | null {
-    // Look for city indicators and the following token
     for (let i = 0; i < tokens.length - 1; i++) {
       if (this.cityIndicators.has(tokens[i])) {
         const potentialCity = tokens[i + 1];
-        // Basic validation for city names (can be enhanced with a city database)
-        if (potentialCity.length >= 2 && /^[a-z]+$/.test(potentialCity)) {
+        if (
+          potentialCity.length >= 2 &&
+          /^[a-z]+$/.test(potentialCity) &&
+          !this.weatherKeywords.has(potentialCity)
+        ) {
           return potentialCity.charAt(0).toUpperCase() + potentialCity.slice(1);
         }
       }
     }
 
-    // If no city indicator found, check if the last token could be a city
     const lastToken = tokens[tokens.length - 1];
-    if (lastToken && lastToken.length >= 2 && /^[a-z]+$/.test(lastToken)) {
+    if (
+      lastToken &&
+      lastToken.length >= 2 &&
+      /^[a-z]+$/.test(lastToken) &&
+      !this.weatherKeywords.has(lastToken)
+    ) {
       return lastToken.charAt(0).toUpperCase() + lastToken.slice(1);
     }
 
