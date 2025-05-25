@@ -71,7 +71,7 @@ const HomePage: React.FC = () => {
         <div className="flex mb-4">
           <Input
             type="text"
-            placeholder="Search by country..."
+            placeholder="Search by country or cities..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleKeyPress}
