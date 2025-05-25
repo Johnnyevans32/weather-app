@@ -40,6 +40,10 @@
     "rimraf": "^6.0.1",
     "rxjs": "^7.2.0"
   },
+  "resolutions": {
+    "wrap-ansi": "7.0.0",
+    "string-width": "4.1.0"
+  },
   "devDependencies": {
     "@nestjs/cli": "^11.0.7",
     "@nestjs/schematics": "^11.0.5",
