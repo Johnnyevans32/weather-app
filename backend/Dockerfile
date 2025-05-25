@@ -2,14 +2,17 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-COPY package*.json ./
-COPY yarn.lock ./
+COPY package*.json yarn.lock ./
 
-RUN yarn install
+RUN yarn install --frozen-lockfile --production && \
+    yarn cache clean
 
 COPY . .
 
-RUN yarn build
+RUN yarn build && \
+    yarn install --frozen-lockfile --production && \
+    yarn cache clean && \
+    rm -rf src/ tests/ 
 
 EXPOSE 3000
 
