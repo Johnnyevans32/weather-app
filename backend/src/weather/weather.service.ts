@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import {
@@ -19,6 +19,8 @@ export class WeatherService {
     'Dubai',
     'Singapore',
     'Hong Kong',
+    'Lagos',
+    'Abuja',
   ];
 
   constructor(
@@ -42,37 +44,22 @@ export class WeatherService {
 
   async getWeatherByCity(
     city: string,
-    provider?: WeatherProviderType,
+    provider: WeatherProviderType = this.weatherRegistry.getDefaultProviderType(),
   ): Promise<WeatherData> {
-    try {
-      const weatherProvider = this.weatherRegistry.get(
-        provider || this.weatherRegistry.getDefaultProviderType(),
-      );
-      return await this.getCachedOrFetch(`weather:${provider}:${city}`, () =>
-        weatherProvider.getWeatherByCity(city),
-      );
-    } catch (error) {
-      throw new NotFoundException(`Weather data not found for city: ${city}`);
-    }
+    const weatherProvider = this.weatherRegistry.get(provider);
+    return await this.getCachedOrFetch(`weather:${provider}:${city}`, () =>
+      weatherProvider.getWeatherByCity(city),
+    );
   }
 
   async getWeatherForecast(
     city: string,
-    provider?: WeatherProviderType,
+    provider: WeatherProviderType = this.weatherRegistry.getDefaultProviderType(),
   ): Promise<WeatherForecast> {
-    try {
-      const weatherProvider = this.weatherRegistry.get(
-        provider || this.weatherRegistry.getDefaultProviderType(),
-      );
-      return await this.getCachedOrFetch(`forecast:${provider}:${city}`, () =>
-        weatherProvider.getWeatherForecast(city),
-      );
-    } catch (error) {
-      console.log(error);
-      throw new NotFoundException(
-        `Weather forecast not found for city: ${city}`,
-      );
-    }
+    const weatherProvider = this.weatherRegistry.get(provider);
+    return await this.getCachedOrFetch(`forecast:${provider}:${city}`, () =>
+      weatherProvider.getWeatherForecast(city),
+    );
   }
 
   async getPopularCitiesWeather(

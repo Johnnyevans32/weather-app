@@ -25,7 +25,7 @@ const ChatPage: React.FC = () => {
       try {
         const aiResponse = await processAIChat(userMessage.text);
         const aiMessage: Message = { 
-          text: aiResponse.response,
+          text: aiResponse.message,
           sender: 'ai',
           link: aiResponse.link,
         };
@@ -75,7 +75,7 @@ const ChatPage: React.FC = () => {
             className="flex-1 mr-2"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             placeholder="Ask about the weather..."
           />
           <Button onClick={handleSendMessage}>Send</Button>

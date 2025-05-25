@@ -35,8 +35,8 @@ const HomePage: React.FC = () => {
       setLoading(true);
       setError(null);
       try {
-        const results = await searchWeatherByCountry(searchTerm);
-        setSearchResults(results);
+        const result = await searchWeatherByCountry(searchTerm);
+        setSearchResults([result]);
         setLoading(false);
       } catch (err) {
         setError("Failed to search weather.");
@@ -44,7 +44,7 @@ const HomePage: React.FC = () => {
         setLoading(false);
       }
     } else {
-      setSearchResults([]); // Clear results if search term is empty
+      setSearchResults([]); 
     }
   };
 
@@ -74,15 +74,12 @@ const HomePage: React.FC = () => {
             placeholder="Search by country..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             className="mr-2"
           />
           <Button onClick={handleSearch}>Search</Button>
         </div>
 
-        {displayCities.length === 0 && searchTerm.trim() && (
-          <div className="text-center">No results found for "{searchTerm}".</div>
-        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {displayCities.map(city => (
@@ -93,7 +90,6 @@ const HomePage: React.FC = () => {
               <CardContent>
                 <p>Temperature: {city.temperature}°C</p>
                 <p>Conditions: {city.description}</p>
-                {/* You can add more weather details here */}
               </CardContent>
             </Card>
           ))}

@@ -16,47 +16,80 @@ export interface WeatherForecast {
   };
 }
 
-export const getPopularCities = async (): Promise<WeatherData[]> => {
-  console.log("Calling mock /weather/popular API");
-  return [
-    { name: "New York", temperature: 20, description: "Sunny", humidity: 50, windSpeed: 5, timestamp: Date.now() },
-    { name: "London", temperature: 15, description: "Cloudy", humidity: 70, windSpeed: 10, timestamp: Date.now() },
-    { name: "Tokyo", temperature: 22, description: "Partly Cloudy", humidity: 65, windSpeed: 7, timestamp: Date.now() },
-    { name: "Paris", temperature: 18, description: "Rainy", humidity: 80, windSpeed: 15, timestamp: Date.now() },
-  ];
-};
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-export const searchWeatherByCountry = async (country: string): Promise<WeatherData[]> => {
-  console.log(`Calling mock /weather/search API with country: ${country}`);
-  const allCities = await getPopularCities(); 
-  const filteredCities = allCities.filter(city => 
-    city.name.toLowerCase().includes(country.toLowerCase())
-  );
-  return filteredCities;
-};
+if (!API_BASE_URL) {
+  console.error("VITE_API_BASE_URL is not defined");
+}
 
-export const getWeatherHistory = async (city: string): Promise<WeatherForecast> => {
-  console.log(`Calling mock /weather/{city} API with city: ${city}`);
-  return {
-    city,
-    weather: {
-      yesterday: { name: city, temperature: 19, description: "Sunny", humidity: 60, windSpeed: 5, timestamp: Date.now() - 86400000 },
-      today: { name: city, temperature: 20, description: "Sunny", humidity: 55, windSpeed: 6, timestamp: Date.now() },
-      tomorrow: { name: city, temperature: 21, description: "Partly Cloudy", humidity: 50, windSpeed: 7, timestamp: Date.now() + 86400000 },
-    }
+console.log({ API_BASE_URL });
+
+const fetchApi = async <T>(
+  endpoint: string,
+  method: string = "GET",
+  data?: any
+): Promise<T> => {
+  if (!API_BASE_URL) {
+    throw new Error("API Base URL not configured");
+  }
+
+  const url = `${API_BASE_URL}${endpoint}`;
+
+  const options: RequestInit = {
+    method,
+    headers: {
+      "Content-Type": "application/json",
+    },
   };
+
+  if (data) {
+    options.body = JSON.stringify(data);
+  }
+
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      throw new Error(`API request failed: ${response.statusText}`);
+    }
+    return response.json();
+  } catch (error) {
+    console.error("API call error:", error);
+    throw error;
+  }
+};
+
+export const getPopularCities = async (): Promise<WeatherData[]> => {
+  console.log("Calling /weather/popular API");
+  const data = await fetchApi<WeatherData[]>("/weather/popular");
+  return data;
+};
+
+export const searchWeatherByCountry = async (
+  country: string
+): Promise<WeatherData> => {
+  console.log(`Calling /weather/search API with country: ${country}`);
+  const data = await fetchApi<WeatherData>(
+    `/weather/search?country=${encodeURIComponent(country)}`
+  );
+  return data;
+};
+
+export const getWeatherHistory = async (
+  city: string
+): Promise<WeatherForecast> => {
+  console.log(`Calling /weather/{city} API with city: ${city}`);
+  const data = await fetchApi<WeatherForecast>(
+    `/weather/${encodeURIComponent(city)}`
+  );
+  return data;
 };
 
 export const processAIChat = async (question: string) => {
-  console.log(`Calling mock /ai/chat API with question: ${question}`);
-  if (question.toLowerCase().includes("weather in")) {
-    const cityMatch = question.toLowerCase().match(/weather in (\w+)/);
-    const city = cityMatch ? cityMatch[1] : "a city";
-    return {
-      response: `You can view ${city}'s weather here.`, 
-      link: `/weather/${city}`
-    };
-  } else {
-    return { response: "I can only answer questions about the weather (with mock data!).", link: null };
-  }
-}; 
+  console.log(`Calling /ai/chat API with question: ${question}`);
+  const data = await fetchApi<{ message: string; link: string | null }>(
+    "/ai/chat",
+    "POST",
+    { question }
+  );
+  return data;
+};
